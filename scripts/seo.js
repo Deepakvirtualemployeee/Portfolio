@@ -1,0 +1,13 @@
+import 'dotenv/config';
+import {readFile,writeFile} from 'node:fs/promises';
+import {profile,projects} from '../shared/profile.js';
+const raw=process.env.SITE_URL||process.env.RENDER_EXTERNAL_URL||'http://localhost:3001';
+const url=new URL(raw).origin;
+const escape=s=>s.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
+const schema={'@context':'https://schema.org','@type':'Person',name:profile.name,jobTitle:profile.role,url,knowsAbout:profile.skills,description:profile.summary,alumniOf:{'@type':'CollegeOrUniversity',name:'Tumkur University'}};
+let html=await readFile('dist/index.html','utf8');
+html=html.replace('</head>',`<link rel="canonical" href="${escape(url)}/"/><meta property="og:url" content="${escape(url)}/"/><script type="application/ld+json">${JSON.stringify(schema).replaceAll('<','\\u003c')}</script></head>`);
+const text=`<div id="root"><main><h1>Deepak — Full Stack Developer</h1><p>${profile.summary} Experience since April 2021, including internship.</p><h2>Skills</h2><p>${profile.skills.join(', ')}</p><h2>Selected work</h2>${projects.map(p=>`<article><h3>${p.name}</h3><p>${p.description}</p><p>${p.detail}</p></article>`).join('')}<h2>Experience</h2>${profile.experience.map(e=>`<article><h3>${e.role} at ${e.company}</h3><p>${e.date}. ${e.body}</p></article>`).join('')}</main></div>`;
+html=html.replace('<div id="root"></div>',text);await writeFile('dist/index.html',html);
+await writeFile('dist/robots.txt',`User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: ${url}/sitemap.xml\n`);
+await writeFile('dist/sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${escape(url)}/</loc></url></urlset>`);

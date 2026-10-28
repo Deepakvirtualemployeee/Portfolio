@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+data/
+*.log
+.npm-cache/
+.browser-check/
+preview.png
+.browser-check-mobile/
+preview-mobile.png

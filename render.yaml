@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: deepak-portfolio
+    runtime: node
+    plan: free
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 24.22.0
+      - key: NODE_ENV
+        value: production
+      - key: EMAIL_PROVIDER
+        value: brevo
+      - key: CONTACT_TO
+        value: deepakhs003@gmail.com
+      - key: CONTACT_FROM
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-6-luna
+      - key: OPENAI_EMBEDDING_MODEL
+        value: text-embedding-3-small
